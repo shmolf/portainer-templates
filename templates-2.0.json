@@ -313,13 +313,13 @@
         {
           "name": "PUID",
           "label": "PUID",
-          "default": "1024",
+          "default": "1000",
           "description": "for UserID"
         },
         {
           "name": "PGID",
           "label": "PGID",
-          "default": "100",
+          "default": "1000",
           "description": "for GroupID"
         },
         {
