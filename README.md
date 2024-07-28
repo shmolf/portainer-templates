@@ -22,17 +22,29 @@ docker compose run app-meta
 <!--
 Acquired by pasting the template JSON into browser DevTools, then running:
 ```js
-console.log('- ' + Array.from(new Set(json.templates.flatMap((t) => t.categories))).sort().join('\n- '))
+console.log(
+  '- '
+  + Array.from(
+    new Set(
+      json.templates
+        .flatMap((t) => t.categories)
+        .map((c) => (c.charAt(0).toUpperCase() + c.slice(1)))
+    )
+  ).sort().join('\n- ')
+)
 ```
 -->
-- backup
-- cms
-- docker
-- games
-- graphic design
-- pdf
-- photos
-- tools
+- Backup
+- Cms
+- Development
+- Docker
+- Games
+- Graphic design
+- Management
+- Pdf
+- Photos
+- Secrets
+- Tools
 
 ## Application List
 <!--
@@ -41,10 +53,12 @@ Acquired by pasting the template JSON into browser DevTools, then running:
 console.log('- ' + Array.from(new Set(json.templates.map((t) => t.title))).sort().join('\n- '))
 ```
 -->
-- Asciinema
-- Cockpit
-- Immich
-- Penpot (http)
-- Stirling PDF
-- Terraria Server
-- Watchtower
+- Asciinema {shmolf}
+- Cockpit {shmolf}
+- Code-server {shmolf}
+- Immich {shmolf}
+- Infisical {shmolf}
+- Penpot (http) {shmolf}
+- Stirling PDF {shmolf}
+- Terraria Server {shmolf}
+- Watchtower {shmolf}
