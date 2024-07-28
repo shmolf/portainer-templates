@@ -1,0 +1,104 @@
+services:
+  db-migration:
+    container_name: infisical-db-migration
+    depends_on:
+      db:
+        condition: service_healthy
+    image: infisical/infisical:latest-postgres
+    environment:
+      - DB_CONNECTION_URI
+    command: npm run migration:latest
+    pull_policy: always
+    networks:
+      - infisical
+
+  backend:
+    container_name: infisical-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      db-migration:
+        condition: service_completed_successfully
+    image: infisical/infisical:latest-postgres
+    pull_policy: always
+    ports:
+      - ${PORT}:8080
+    environment:
+      - NODE_ENV=production
+      - DB_CONNECTION_URI
+      - ENCRYPTION_KEY
+      - AUTH_SECRET
+      - SITE_URL
+      - REDIS_URL
+      - SMTP_HOST
+      - SMTP_PORT
+      - SMTP_NAME
+      - SMTP_USERNAME
+      - SMTP_PASSWORD
+      - CLIENT_ID_HEROKU
+      - CLIENT_SECRET_HEROKU
+      - CLIENT_ID_VERCEL
+      - CLIENT_SECRET_VERCEL
+      - CLIENT_SLUG_VERCEL
+      - CLIENT_ID_NETLIFY
+      - CLIENT_SECRET_NETLIFY
+      - CLIENT_ID_GITHUB
+      - CLIENT_SECRET_GITHUB
+      - CLIENT_ID_GITLAB
+      - CLIENT_SECRET_GITLAB
+      - CLIENT_ID_BITBUCKET
+      - SENTRY_DSN
+      - CLIENT_ID_GOOGLE_LOGIN
+      - CLIENT_SECRET_GOOGLE_LOGIN
+      - CLIENT_ID_GITHUB_LOGIN
+      - CLIENT_SECRET_GITHUB_LOGIN
+      - CLIENT_ID_GITLAB_LOGIN
+      - CLIENT_SECRET_GITLAB_LOGIN
+      - CAPTCHA_SECRET
+      - NEXT_PUBLIC_CAPTCHA_SITE_KEY
+      - PLAIN_API_KEY
+      - PLAIN_WISH_LABEL_IDS
+    networks:
+      - infisical
+
+  redis:
+    image: redis
+    container_name: infisical-dev-redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6379:6379
+    networks:
+      - infisical
+    volumes:
+      - redis_data:/data
+
+  db:
+    container_name: infisical-db
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_DB
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - infisical
+    healthcheck:
+      test: "pg_isready --username=${POSTGRES_USER} && psql --username=${POSTGRES_USER} --list"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  pg_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  infisical:
